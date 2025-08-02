@@ -3,6 +3,6 @@
 
 #include "shared.h"
 
-void print(Channel channel);
+void better_enum_example_print(Channel channel);
 
 #endif // #ifndef HELPER_H

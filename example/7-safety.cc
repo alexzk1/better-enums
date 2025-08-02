@@ -31,7 +31,13 @@ BETTER_ENUM(Node, char, Red, Black)
 
 // and everything will work as expected.
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_7_safety_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     assert((+Channel::Red)._to_integral() != (+Node::Red)._to_integral());
 

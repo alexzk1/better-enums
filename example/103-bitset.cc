@@ -43,7 +43,13 @@ BETTER_ENUM(EFLAGS, int,
             Overflow, NestedTask = 14, Resume = 16, V8086, AlignmentCheck,
             CPUIDPresent = 21)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_103_bitset_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     EnumSet<EFLAGS>     eflags = 1 << EFLAGS::Carry | 1 << EFLAGS::Zero;
 

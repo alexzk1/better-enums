@@ -11,7 +11,13 @@
 
 BETTER_ENUM(Channel, int, Red, Green, Blue)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_6_iostreams_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     std::cout << +Channel::Red << std::endl;
     return 0;

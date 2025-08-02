@@ -32,7 +32,7 @@ BETTER_ENUM(Channel, int, Red, Green, Blue)
 
 // We will create a map from this function:
 
-constexpr const char* describe(Channel channel)
+static constexpr const char* describe(Channel channel)
 {
     switch(channel) {
         case Channel::Red:   return "the red channel";
@@ -45,11 +45,17 @@ constexpr const char* describe(Channel channel)
 
 // Here is the map. The actual type is better_enums::map<Channel, const char*>.
 
-constexpr auto descriptions = better_enums::make_map(describe);
+static constexpr auto descriptions = better_enums::make_map(describe);
 
 // And the usage:
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_5_map_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     std::cout << descriptions[Channel::Red] << std::endl;
 

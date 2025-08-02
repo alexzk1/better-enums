@@ -24,7 +24,13 @@ struct Header {
 
 // Here is what we have.
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_8_representation_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     assert(sizeof(ContentType) == 2);
 

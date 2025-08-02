@@ -84,7 +84,13 @@ static_assert(size == 3, "");
 static_assert(value_0 == +Channel::Red, "");
 static_assert(value_1 == +Channel::Green, "");
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_105_cpp17_reflection_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     std::cout << identifier_2 << std::endl;
     return 0;

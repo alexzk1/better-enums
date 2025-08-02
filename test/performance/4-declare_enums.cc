@@ -219,7 +219,13 @@ BETTER_ENUM(ASTNode29, int,
             LetBinding, CaseExpression, Pattern, Signature, Module, Functor,
             TypeVariable, BasicType, ArrowType, VariantTypeConstant)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_4_declare_enums_perf_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     return 0;
 }

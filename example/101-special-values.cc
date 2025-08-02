@@ -145,12 +145,18 @@ static_assert(+Compression::None == default_, "");
 
 // Finally, we can have nice code such as this:
 
-void dump(Channel channel)
+static void dump(Channel channel)
 {
     std::cout << channel._to_string() << std::endl;
 }
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_101_special_values_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     dump(invalid);
 

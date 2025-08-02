@@ -10,7 +10,13 @@
 
 BETTER_ENUM(Channel, int, Red, Green = 2, Blue)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_3_iterate_example_main
+#endif
+
+extern "C"
+int main(void)
 {
 
     for (size_t index = 0; index < Channel::_size(); ++index) {

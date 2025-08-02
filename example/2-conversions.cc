@@ -25,7 +25,13 @@ BETTER_ENUM(Channel, int, Cyan = 1, Magenta, Yellow, Black)
 //   2. ::_from_string
 //   3. ::_from_string_nothrow
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_2_conversions_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     Channel     channel = Channel::Cyan;
     std::cout << channel._to_string() << " ";

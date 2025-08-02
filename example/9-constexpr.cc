@@ -39,7 +39,13 @@ constexpr size_t length(const char *s, size_t index = 0)
 constexpr size_t    length_of_name_of_second_constant =
     length(Channel::_names()[1]);
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_9_constexpr_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     std::cout << length_of_name_of_second_constant << std::endl;
 

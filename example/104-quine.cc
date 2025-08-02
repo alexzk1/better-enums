@@ -114,8 +114,8 @@ constexpr size_t declaration_length()
 // the binary's loader. The extra one byte in each buffer is for the null
 // terminator.
 
-char    channel_definition[declaration_length<Channel>() + 1];
-char    depth_definition[declaration_length<Depth>() + 1];
+static char    channel_definition[declaration_length<Channel>() + 1];
+static char    depth_definition[declaration_length<Depth>() + 1];
 
 // Let's also create the formatting function. This is executed at run time, but
 // we will be giving it pointers to our statically-allocated buffers. It will
@@ -147,7 +147,13 @@ size_t format(char *buffer)
 //
 // Now, we can write and run this code.
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_104_quine_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     size_t  channel_length = format<Channel>(channel_definition);
     assert(channel_length + 1 == sizeof(channel_definition));

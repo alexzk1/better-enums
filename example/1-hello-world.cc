@@ -9,7 +9,13 @@
 
 BETTER_ENUM(Word, int, Hello, World)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_1_hello_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     std::cout << (+Word::Hello)._to_string() << ", "
               << (+Word::World)._to_string() << "!"

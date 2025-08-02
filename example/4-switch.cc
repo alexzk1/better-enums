@@ -9,7 +9,13 @@
 
 BETTER_ENUM(Channel, int, Red, Green, Blue)
 
-int main()
+
+#if defined(BUILD_MONOLITHIC)
+#define main    better_enum_4_switch_example_main
+#endif
+
+extern "C"
+int main(void)
 {
     Channel     channel = Channel::Green;
     int         n;
