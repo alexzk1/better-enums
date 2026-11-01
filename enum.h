@@ -349,8 +349,18 @@ struct optional {
     BETTER_ENUMS_CONSTEXPR_ const T& value() const { return _value; }
 
     #if defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
-    BETTER_ENUMS_CONSTEXPR_ operator std::optional<T>() const {
-        if(has_value()) {return {_value};}
+    // Conversion to std::optional<T>.
+    //
+    // Implemented as a member function rather than an implicit conversion
+    // operator: better_enums::optional<T> also exposes an implicit
+    // operator bool(), and std::optional<T>'s generic templated constructor
+    // (template<class U> optional(U&&)) would otherwise hijack every
+    // initialization of std::optional<T> from a better_enums::optional<T> via
+    // the bool -> T path. An explicit conversion operator does not help (the
+    // templated constructor still wins), so an explicit to_std() is the only
+    // way to obtain a correct std::optional<T>.
+    BETTER_ENUMS_CONSTEXPR_ std::optional<T> to_std() const {
+        if (_valid) { return {_value}; }
         return std::nullopt;
     }
     #endif

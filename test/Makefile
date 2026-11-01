@@ -40,6 +40,15 @@ CXXTESTGEN := python `which cxxtestgen | sed -E 's!(/cygdrive)?/c/!c:/!'`
 
 endif
 
+# Resolve cxxtest: prefer a system installation; otherwise fall back to the
+# local working copy created by ensure_cxxtest.py (a shallow clone under
+# .cxxtest/). When a local copy is used, point CXXTESTGEN at its bundled
+# generator so the test runner can be generated without a system install.
+CXXTEST_ROOT := $(shell python3 $(CURDIR)/ensure_cxxtest.py)
+ifneq ($(CXXTEST_ROOT),)
+CXXTESTGEN := $(CXXTEST_ROOT)/bin/cxxtestgen
+endif
+
 DEFAULTS := \
 	TITLE=default \
 	MAKE_COMMAND=$(DEFAULT_MAKE_COMMAND) \
@@ -127,6 +136,9 @@ all-configurations :
 		one-configuration
 	make TITLE=$(TITLE)-c++14 \
 		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=CXX14" \
+		one-configuration
+	make TITLE=$(TITLE)-c++17 \
+		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=CXX17" \
 		one-configuration
 	make TITLE=$(TITLE)-c++98 \
 		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=CXX98" \

@@ -1,8 +1,31 @@
 # Invoked automatically by the Makefile.
 
-cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10)
 
 project("Better Enums Testing" CXX)
+
+
+# Resolve the cxxtest test framework as the first step.
+#
+# The test runner is generated from test/cxxtest/*.h with cxxtest's
+# cxxtestgen and then compiled against cxxtest's headers. Prefer a system
+# installation; when none is available, reuse the local working copy created by
+# ensure_cxxtest.py (a shallow clone under test/.cxxtest) and point the
+# compiler at its headers.
+execute_process(
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/ensure_cxxtest.py
+    RESULT_VARIABLE _cxxtest_result
+    OUTPUT_VARIABLE _cxxtest_root
+    OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(NOT _cxxtest_result EQUAL 0 OR _cxxtest_root STREQUAL "")
+    message(STATUS "cxxtest: using system installation (default include path)")
+else()
+    message(STATUS "cxxtest: using local copy at ${_cxxtest_root}")
+    # Mark the cxxtest headers as SYSTEM includes so warnings originating inside
+    # the third-party cxxtest library code (e.g. -Wignored-qualifiers) do not
+    # trip -Werror; the better-enums test code itself is still fully checked.
+    include_directories(SYSTEM ${_cxxtest_root})
+endif()
 
 
 # Detect compiler feature support.
@@ -98,6 +121,16 @@ elseif(CONFIGURATION STREQUAL CXX14)
         file(WRITE "${DO_NOT_TEST_FILE}")
         return()
     endif()
+elseif(CONFIGURATION STREQUAL CXX17)
+    # The to_std() optional->std::optional conversion is a C++17 feature; only
+    # exercise it where the standard (and <optional>) is actually available.
+    if(SUPPORTS_RELAXED_CONSTEXPR)
+        set(CMAKE_CXX_STANDARD 17)
+    else()
+        message(WARNING "This compiler does not support C++17")
+        file(WRITE "${DO_NOT_TEST_FILE}")
+        return()
+    endif()
 else()
     set(CMAKE_CXX_STANDARD 11)
 endif()
@@ -182,6 +215,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_cxx_flag_if_supported("-Wextra")
     add_cxx_flag_if_supported("-Wno-variadic-macros")
     add_cxx_flag_if_supported("-Wno-unused-const-variable")
+    # cxxtest's TS_ASSERT_THROWS catches exceptions by value (e.g.
+    # std::runtime_error); newer GCC/Clang warn about this (-Wcatch-value).
+    add_cxx_flag_if_supported("-Wno-catch-value")
 
     add_cxx_flag_to_target_if_supported(linking "-Weverything")
     add_cxx_flag_to_target_if_supported(linking "-Wno-c++98-compat-pedantic")
@@ -198,6 +234,20 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_cxx_flag_to_target_if_supported(linking "-Wconditionally-supported")
     add_cxx_flag_to_target_if_supported(linking "-Wconversion")
     add_cxx_flag_to_target_if_supported(linking "-Wuseless-cast")
+
+    # The examples, performance tests and the linking test all define
+    # 'extern "C" int main' on purpose; GCC/Clang reject that under -Wpedantic
+    # (main must have C++ linkage). Silence it for those targets only, keeping
+    # -Wpedantic active for the cxxtest target that checks our own code.
+    add_cxx_flag_to_target_if_supported(linking "-Wno-pedantic")
+    foreach(TEST ${PERFORMANCE_TESTS})
+        add_cxx_flag_to_target_if_supported(
+            performance-${TEST} "-Wno-pedantic")
+    endforeach()
+    foreach(EXAMPLE ${EXAMPLES})
+        add_cxx_flag_to_target_if_supported(
+            example-${EXAMPLE} "-Wno-pedantic")
+    endforeach()
 
     add_definitions("-Werror")
 endif()

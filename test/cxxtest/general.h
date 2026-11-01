@@ -424,6 +424,34 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index_unchecked(2));
 	}
+
+    void test_optional_to_std()
+    {
+#if defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+        // Regression test for the optional -> std::optional conversion.
+        //
+        // better_enums::optional<T> also exposes an implicit operator bool(),
+        // so the conversion to std::optional<T> must go through the explicit
+        // to_std() member (an implicit or explicit conversion operator would
+        // still be shadowed by std::optional<T>'s templated constructor via the
+        // bool -> T path). Verify that to_std() yields a correct populated and
+        // empty std::optional<T>.
+        better_enums::optional<Depth> present =
+            Depth::_from_integral_nothrow(40);
+        TS_ASSERT(present);
+        std::optional<Depth> populated = present.to_std();
+        TS_ASSERT(populated);
+        TS_ASSERT_EQUALS(*populated, +Depth::HighColor);
+
+        better_enums::optional<Depth> empty;
+        TS_ASSERT(!empty);
+        std::optional<Depth> empty_optional = empty.to_std();
+        TS_ASSERT(!empty_optional);
+#else
+        // std::optional (and therefore to_std()) is a C++17+ feature; there is
+        // nothing to exercise on older standards.
+#endif
+    }
 };
 
 
