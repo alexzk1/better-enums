@@ -48,12 +48,7 @@ There are several convenient ways to pull it in as a dependency.
 ```cmake
 include(CPM)
 
-cpmaddpackage(
-    NAME
-    better-enums
-    URI
-    "gh:alexzk1/better-enums@main"
-)
+cpmaddpackage(URI "gh:alexzk1/better-enums#master")
 ```
 
 Then link the `better_enums::better_enums` target against your own target:
