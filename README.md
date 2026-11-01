@@ -61,11 +61,9 @@ The option `BUILD_BETTER_ENUM_TESTS` is `OFF` by default; pass it through to
 build and run the test suite instead:
 
 ```cmake
-cpmaddpackage(
-    NAME
-    better-enums
+cpmaddpackage(    
     URI
-    "gh:alexzk1/better-enums@main"
+    "gh:alexzk1/better-enums#master"
     OPTIONS
     "BUILD_BETTER_ENUM_TESTS ON"
 )
