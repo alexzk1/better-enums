@@ -35,9 +35,53 @@ See the [project page][project] for full documentation.
 
 ## Installation
 
-Simply add `enum.h` to your project.
+The library is header-only: simply add `enum.h` to your project and
+`#include <enum.h>`.
+
+There are several convenient ways to pull it in as a dependency.
+
+### CPM
+
+[CPM.cmake][cpm] manages C++ dependencies through CMake. Add it to your
+`CMakeLists.txt` and declare `better-enums`:
+
+```cmake
+include(CPM)
+
+cpmaddpackage(
+    NAME
+    better-enums
+    URI
+    "gh:alexzk1/better-enums@main"
+)
+```
+
+Then link the `better_enums::better_enums` target against your own target:
+
+```cmake
+target_link_libraries(my-application PRIVATE better_enums::better_enums)
+```
+
+The option `BUILD_BETTER_ENUM_TESTS` is `OFF` by default; pass it through to
+build and run the test suite instead:
+
+```cmake
+cpmaddpackage(
+    NAME
+    better-enums
+    URI
+    "gh:alexzk1/better-enums@main"
+    OPTIONS
+    "BUILD_BETTER_ENUM_TESTS ON"
+)
+```
+
+The package also installs a header and an exported target, so it works with
+`find_package` after `make install`.
 
 <br/>
+
+[cpm]: https://github.com/cpm-cmake/CPM.cmake
 
 ## Additional features
 
